@@ -37,8 +37,8 @@ UDOffset = 150
 body_distance=[10,20,30,40,50,60]
 
 #Different Safe zones
-Safe_Zones=[(80,180,5),(90,200,15),(120,300,60),(140,330,100)]
-speeds=[5,10,15,20]
+Safe_Zones=[(10,30,2),(90,200,15),(120,300,60),(140,330,100)]
+speeds=[2,5,10,15,20]
 
 # These are the values in which kicks in speed up mode, as of now, this hasn't been finalized or fine tuned so be careful
 # Tested are 3, 4, 5
@@ -129,7 +129,7 @@ class FrontEnd(object):
 
                 ret, image = vid.read()
                 imgCount+=1
-                if imgCount % 2 != 0:
+                if imgCount % 30 != 0:
                     continue
                 if ret:
                     image = imutils.resize(image,width=min(350, image.shape[1]))
@@ -173,12 +173,12 @@ class FrontEnd(object):
                             # z
                             theta1 = theta0 * (2 * abs(distance[0]) + person_width) / (2 * B)
                             z = (2 * abs(distance[0]) + person_width) / (2 * math.tan(math.radians(abs(theta1))))
+                            z = int(z) - 229
                             distance = (int(distance[0]), int(distance[1]), int(z))
 
                             if not args.debug:
                                 # for turning
-                                self.update()
-
+                                
                                 if distance[0] < -szX:
                                     self.yaw_velocity = S
                                     # self.left_right_velocity = S2
@@ -203,7 +203,7 @@ class FrontEnd(object):
                                 # for forward back
                                 if distance[2] > szZ:
                                     self.for_back_velocity = S + F
-                                elif distance[2] < szZ:
+                                elif distance[2] < -szZ:
                                     self.for_back_velocity = -S - F
                                 else:
                                     self.for_back_velocity = 0
@@ -220,6 +220,9 @@ class FrontEnd(object):
                             self.up_down_velocity = 0
                             self.for_back_velocity = 0
                             print("NO TARGET")
+                    
+                        self.update()
+
                     dCol = lerp(np.array((0,0,255)),np.array((255,255,255)),self.safe_zone+1/7)
 
                     if OVERRIDE:
