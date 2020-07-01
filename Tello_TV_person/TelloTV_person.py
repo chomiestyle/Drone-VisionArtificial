@@ -47,7 +47,8 @@ acc = [500,250,250,150,110,70,50]
 # Frames per second of the pygame window display
 FPS = 25
 dimensions = (960, 720)
-
+frames_to_ignore = 30*5
+ignored_frames = 0
 # Initializing the HOG person
 # detector
 hog = cv2.HOGDescriptor()
@@ -128,6 +129,11 @@ class FrontEnd(object):
             if vid.isOpened():
 
                 ret, image = vid.read()
+                
+                if ignored_frames < frames_to_ignore:
+                    ignored_frames += 1
+                    continue
+                 
                 imgCount+=1
                 if imgCount % 30 != 0:
                     continue
